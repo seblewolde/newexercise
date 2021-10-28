@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<s3:basic-connection accessKey="AKIAZFZDWN5FJRPVKRW5" secretKey="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" region="US_EAST_2" />
 	</s3:config>
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cd7d0a10-9c9c-4366-adac-550d709cb313" >
-		<http:listener-connection host="0.0.0.0" port="8085" />
+		<http:listener-connection host="0.0.0.0" port="8022" />
 	</http:listener-config>
 	<flow name="amazonwebFlow" doc:id="22913bf2-d75c-49d6-bc49-e80bd6378ca7" >
 		<http:listener doc:name="Listener" doc:id="8cf684ea-89e2-4926-bbbe-8809a408d0d3" config-ref="HTTP_Listener_config" path="/createbucket1"/>
