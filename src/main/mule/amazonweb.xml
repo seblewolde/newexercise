@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="7bcb071d-5ab9-4dce-bdfd-8e2f227401af" >
+		<s3:basic-connection accessKey="AKIAZFZDWN5FJRPVKRW5" secretKey="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" region="US_EAST_2" />
+	</s3:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cd7d0a10-9c9c-4366-adac-550d709cb313" >
+		<http:listener-connection host="0.0.0.0" port="8085" />
+	</http:listener-config>
+	<flow name="amazonwebFlow" doc:id="22913bf2-d75c-49d6-bc49-e80bd6378ca7" >
+		<http:listener doc:name="Listener" doc:id="8cf684ea-89e2-4926-bbbe-8809a408d0d3" config-ref="HTTP_Listener_config" path="/createBucket"/>
+		<s3:create-bucket doc:name="Create bucket" doc:id="0f290dfe-e704-4351-865a-b14d181cf96f" config-ref="Amazon_S3_Configuration" bucketName="ins456" acl="PUBLIC_READ_WRITE"/>
+		<set-payload value="#['bucket created']" doc:name="Set Payload" doc:id="06de0e73-dcd5-4c3d-ae1d-49145a61770b" />
+	</flow>
+	<flow name="amazonwebFlow1" doc:id="43c6071f-1539-4e8d-9a12-bf891eaebfdd" >
+		<http:listener doc:name="Listener" doc:id="0be6c271-cdeb-42bb-9d5b-ebd47f3efd58" config-ref="HTTP_Listener_config" path="createObject"/>
+		<file:read doc:name="Read" doc:id="834f98c4-294e-409b-98a8-eb104866afef" path="C:\Users\swolde\N3\msg12.xml"/>
+		<s3:create-object doc:name="Create object" doc:id="4469db23-da5f-4c63-aed2-b1ade82326e3" config-ref="Amazon_S3_Configuration" bucketName="ins456" key="msg11.xml" acl="PUBLIC_READ_WRITE"/>
+		<set-payload value="#['object has been created']" doc:name="Set Payload" doc:id="9aba0f3c-4daa-4b46-bee3-79884218ddab" />
+	</flow>
+	<flow name="amazonwebFlow2" doc:id="dabe6c8b-880d-4b85-93dd-ee7aac3e461c" >
+		<http:listener doc:name="Listener" doc:id="94b92763-a90d-4b1c-b403-1c4fc479bfdd" config-ref="HTTP_Listener_config" path="/listBuckets"/>
+		<s3:list-buckets doc:name="List buckets" doc:id="6988f6b9-f7a9-4d7d-a14d-ab1c399bf222" config-ref="Amazon_S3_Configuration" region="US_EAST_2"/>
+		<ee:transform doc:name="Transform Message" doc:id="1af824d6-40e9-455f-b41f-c4a3a9b973af" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
